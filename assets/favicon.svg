@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="46" fill="#0B0A0D"></rect>
+  <g fill="#EDEAE3" transform="translate(0,-6)">
+    <rect x="40" y="48" width="120" height="18" rx="3"></rect>
+    <polygon points="100,66 146,160 128,160 100,108 72,160 54,160"></polygon>
+  </g>
+</svg>
