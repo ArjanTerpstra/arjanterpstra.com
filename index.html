@@ -139,7 +139,7 @@
   .nav a:hover { color: var(--paper); }
   .nav__cta { color: var(--paper) !important; border: 1px solid var(--line); padding: 9px 18px; border-radius: 999px; transition: all .25s ease; }
   .nav__cta:hover { background: var(--accent); border-color: var(--accent); color: #fff !important; }
-  @media (max-width: 620px) { .nav a:not(.nav__cta) { display: none; } .site-header .brand { display: none; } .site-header { justify-content: flex-end; } }
+  @media (max-width: 620px) { .nav a:not(.nav__cta) { display: none; } .hero__mark { display: none; } }
 
   /* Hero */
   .hero {
@@ -206,9 +206,42 @@
   .section__sub { color: var(--faint); margin: 10px 0 0; letter-spacing: .04em; }
 
   /* Statement */
-  .statement { text-align: center; padding-top: clamp(40px, 8vh, 90px); padding-bottom: 0; }
-  .statement p { font-family: var(--font-display); font-weight: 300; font-size: clamp(22px, 3.4vw, 40px); line-height: 1.35; color: var(--paper); margin-inline: auto; max-width: 24ch; }
-  .statement em { font-style: italic; color: var(--paper); }
+  .statement { text-align: center; padding-top: clamp(56px, 11vh, 130px); padding-bottom: clamp(20px, 5vh, 60px); }
+  .statement__inner { max-width: 1000px; margin-inline: auto; display: flex; flex-direction: column; align-items: center; }
+  .statement__kicker {
+    display: inline-flex; align-items: center; gap: 16px;
+    font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+    letter-spacing: .42em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: clamp(26px, 4vh, 40px);
+  }
+  .statement__kicker::before, .statement__kicker::after {
+    content: ""; width: clamp(28px, 6vw, 60px); height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .7));
+  }
+  .statement__kicker::after { background: linear-gradient(90deg, rgba(var(--accent-rgb), .7), transparent); }
+  .statement__lead {
+    font-family: var(--font-display); font-weight: 300;
+    font-size: clamp(28px, 5vw, 62px); line-height: 1.16; letter-spacing: -.01em;
+    color: var(--paper); margin: 0; max-width: 18ch; text-wrap: balance;
+  }
+  .statement__lead em { font-style: italic; font-weight: 400; color: #fff; white-space: nowrap; }
+  .statement__traits {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: clamp(12px, 2vw, 22px); margin-top: clamp(30px, 5vh, 48px);
+    font-family: var(--font-display); font-weight: 500;
+    font-size: clamp(12px, 1.35vw, 16px); letter-spacing: .26em; text-transform: uppercase;
+    color: var(--paper);
+  }
+  .statement__traits .dot { width: 5px; height: 5px; border-radius: 999px; background: var(--accent); flex: none; box-shadow: 0 0 12px rgba(var(--accent-rgb), .8); }
+  .statement__coda {
+    font-family: var(--font-ui); font-style: italic; font-weight: 400;
+    font-size: clamp(15px, 1.8vw, 20px); line-height: 1.55; color: var(--muted);
+    margin: clamp(26px, 4vh, 40px) 0 0; max-width: 40ch;
+  }
+  @media (max-width: 520px) {
+    .statement__traits { gap: 10px 14px; }
+    .statement__lead em { white-space: normal; }
+  }
 
   /* Work grid — shiny, framed cards */
   .work-grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
@@ -545,11 +578,20 @@
 
     <div class="cosmos">
     <section class="statement section" id="statement">
-      <p class="reveal">
-        Cinematic music and sound design for <em>trailers</em>, <em>games</em>
-        and <em>brands</em>. Layered, emotional, larger than life, where classical,
-        contemporary and electronic meet.
-      </p>
+      <div class="statement__inner reveal">
+        <span class="statement__kicker">The Sound</span>
+        <p class="statement__lead">
+          Cinematic music &amp; sound design for <em>trailers</em>, <em>games</em> and <em>brands</em>.
+        </p>
+        <div class="statement__traits">
+          <span>Immersive</span>
+          <span class="dot"></span>
+          <span>Emotional</span>
+          <span class="dot"></span>
+          <span>Larger&nbsp;than&nbsp;life</span>
+        </div>
+        <p class="statement__coda">Where classical, contemporary and electronic meet.</p>
+      </div>
     </section>
 
     <section class="section" id="work">
