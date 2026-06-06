@@ -768,7 +768,7 @@
           <h2 class="join__title">Let's score<br>your story</h2>
           <p class="join__sub">Available for trailers, games, film &amp; brand work via <a class="contact__link" href="https://www.positionmusic.com" target="_blank" rel="noopener">Position Music</a>. The next cue starts with a conversation.</p>
           <div class="join__cta">
-            <a class="btn btn--primary" href="mailto:info@arjanterpstra.com"><span class="tri"></span> Start a project</a>
+            <a class="btn btn--primary" href="/cdn-cgi/l/email-protection#c3aaada5ac83a2b1a9a2adb7a6b1b3b0b7b1a2eda0acae"><span class="tri"></span> Start a project</a>
             <a class="btn btn--ghost" href="https://www.positionmusic.com" target="_blank" rel="noopener">Position Music</a>
           </div>
           <nav class="socials" aria-label="Social media">
@@ -804,7 +804,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Build the monochrome client-logo marquee (defined once, duplicated for the seamless loop)
   (function () {
     var track = document.getElementById('logoTrack');
@@ -1136,17 +1136,13 @@
       var url = v.getAttribute('data-src');
       if (!url) return;
       var ready = function () { v.classList.add('is-ready'); tryPlay(); };
-      fetch(url)
-        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
-        .then(function (b) {
-          v.src = URL.createObjectURL(b);
-          if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
-        })
-        .catch(function () {
-          // Fallback: stream directly (works on desktop browsers without range support)
-          v.src = url;
-          if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
-        });
+      // Progressive streaming: the browser plays as soon as the first frames
+      // buffer, instead of waiting for the whole file to download (much faster
+      // on mobile / slow connections). The poster shows until then.
+      v.preload = 'auto';
+      v.src = url;
+      v.load();
+      if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
     };
     begin();
     // Fallback: if autoplay was blocked (Low Power Mode etc.), start on first interaction
@@ -1181,10 +1177,8 @@
       if (started) return; started = true;
       var url = v.getAttribute('data-src'); if (!url) return;
       var ready = function () { v.classList.add('is-ready'); tryPlay(); };
-      fetch(url)
-        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
-        .then(function (b) { v.src = URL.createObjectURL(b); if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true }); })
-        .catch(function () { v.src = url; if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true }); });
+      v.preload = 'auto'; v.src = url; v.load();
+      if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
     };
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
@@ -1213,10 +1207,8 @@
       if (loaded) return; loaded = true;
       var url = v.getAttribute('data-src'); if (!url) return;
       var ready = function () { v.classList.add('is-ready'); tryPlay(); };
-      fetch(url)
-        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
-        .then(function (b) { v.src = URL.createObjectURL(b); if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true }); })
-        .catch(function () { v.src = url; if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true }); });
+      v.preload = 'auto'; v.src = url; v.load();
+      if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
     };
     // keep the slow rate pinned (browsers reset it on load/play)
     v.addEventListener('play', setSlow);
