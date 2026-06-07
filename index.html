@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arjan Terpstra · Composer &amp; Sound Designer</title>
-  <meta name="description" content="Arjan Terpstra, composer, producer and sound designer. Trailer music, game audio and cinematic scores." />
+  <title>Arjan Terpstra · Trailer Composer · Game &amp; Film Music Composer</title>
+  <meta name="description" content="Arjan Terpstra is a trailer composer, trailer music composer, game composer, film music composer and sound designer. Cinematic music for trailers, games and brands." />
+  <meta name="keywords" content="trailer composer, trailer music composer, game composer, film music composer, sound designer trailer, Arjan Terpstra" />
   <meta name="theme-color" content="#0B0A0D" />
   <meta name="robots" content="index, follow" />
+  <!-- Google Search Console: vervang VERVANG_MET_JE_GOOGLE_CODE door de code uit Search Console (stap 2) -->
+  <meta name="google-site-verification" content="VERVANG_MET_JE_GOOGLE_CODE" />
   <link rel="canonical" href="https://arjanterpstra.com/" />
 
   <!-- Icons -->
@@ -16,18 +19,18 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Arjan Terpstra" />
-  <meta property="og:title" content="Arjan Terpstra · Composer &amp; Sound Designer" />
-  <meta property="og:description" content="Cinematic music and sound design for trailers, games and brands, by composer and producer Arjan Terpstra." />
+  <meta property="og:title" content="Arjan Terpstra · Trailer Composer · Game &amp; Film Music Composer" />
+  <meta property="og:description" content="Trailer composer, trailer music composer, game composer, film music composer and sound designer. Cinematic music for trailers, games and brands." />
   <meta property="og:url" content="https://arjanterpstra.com/" />
   <meta property="og:image" content="https://arjanterpstra.com/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Arjan Terpstra, Composer, Producer and Sound Designer" />
+  <meta property="og:image:alt" content="Arjan Terpstra, Trailer Composer, Game &amp; Film Music Composer and Sound Designer" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Arjan Terpstra · Composer &amp; Sound Designer" />
-  <meta name="twitter:description" content="Cinematic music and sound design for trailers, games and brands." />
+  <meta name="twitter:title" content="Arjan Terpstra · Trailer Composer · Game &amp; Film Music Composer" />
+  <meta name="twitter:description" content="Trailer composer, game composer, film music composer and sound designer. Cinematic music for trailers, games and brands." />
   <meta name="twitter:image" content="https://arjanterpstra.com/assets/og-image.jpg" />
 
   <!-- Structured data -->
@@ -38,10 +41,10 @@
     "name": "Arjan Terpstra",
     "url": "https://arjanterpstra.com/",
     "image": "https://arjanterpstra.com/assets/og-image.jpg",
-    "jobTitle": "Composer, Producer & Sound Designer",
+    "jobTitle": "Trailer Composer, Game & Film Music Composer, Sound Designer",
     "nationality": "Dutch",
-    "description": "Composer, producer and sound designer creating cinematic music and sound design for trailers, games and brands.",
-    "knowsAbout": ["Trailer music", "Game audio", "Sound design", "Film scoring", "Brand films"],
+    "description": "Trailer composer, trailer music composer, game composer, film music composer and sound designer creating cinematic music for trailers, games and brands.",
+    "knowsAbout": ["Trailer composer", "Trailer music composer", "Game composer", "Film music composer", "Sound designer", "Brand films"],
     "sameAs": [
       "https://open.spotify.com/artist/2ddTRi8u8gCnG3Aphy3IDh",
       "https://www.youtube.com/playlist?list=PLJkgibw0HmOfI9y0zap0LcIbWuMFbRsZc",
@@ -53,6 +56,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="media/hero-poster.jpg" fetchpriority="high" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600&family=Cinzel:wght@700&family=Oswald:wght@300;400;700&family=Saira+Condensed:wght@700&display=swap" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600&family=Cinzel:wght@700&family=Oswald:wght@300;400;700&family=Saira+Condensed:wght@700&display=swap" /></noscript>
 
@@ -145,6 +149,7 @@
 
   @media (max-width: 620px) {
     .hero__mark { display: none; }
+    .brand__name { display: none; }
 
     .nav-toggle {
       display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
@@ -595,7 +600,7 @@
       <div class="hero__inner">
         <span class="hero__mark reveal" data-icon="mark"></span>
         <h1 class="hero__title reveal">Arjan Terpstra</h1>
-        <p class="hero__role reveal">Composer · Producer · Sound Designer</p>
+        <p class="hero__role reveal">Trailer · Game &amp; Film Composer · Sound Designer</p>
         <div class="hero__cta reveal">
           <a href="#listen" class="btn btn--primary"><span class="tri"></span> Hear the music</a>
           <a href="#work" class="btn btn--ghost">Selected work</a>
@@ -1202,7 +1207,21 @@
       v.load();
       if (v.readyState >= 2) ready(); else v.addEventListener('loadeddata', ready, { once: true });
     };
-    begin();
+    // Performance: on small screens and on data-saver / slow connections, skip the
+    // heavy hero video entirely and keep the lightweight poster. This frees bandwidth
+    // on mobile so the title + poster paint fast (better FCP / LCP on 4G).
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var saveData = conn && conn.saveData;
+    var slowNet = conn && /(^|-)2g$/.test(conn.effectiveType || '');
+    var smallScreen = window.matchMedia('(max-width: 820px)').matches;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!smallScreen && !saveData && !slowNet && !reduceMotion) {
+      begin();
+    } else {
+      // Don't auto-load on mobile, but still allow it to start on first interaction
+      // for users who scroll/tap and have the bandwidth to spare.
+      started = false;
+    }
     // Fallback: if autoplay was blocked (Low Power Mode etc.), start on first interaction
     var kick = function () {
       if (v.paused) tryPlay();
