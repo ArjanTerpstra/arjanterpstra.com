@@ -139,7 +139,39 @@
   .nav a:hover { color: var(--paper); }
   .nav__cta { color: var(--paper) !important; border: 1px solid var(--line); padding: 9px 18px; border-radius: 999px; transition: all .25s ease; }
   .nav__cta:hover { background: var(--accent); border-color: var(--accent); color: #fff !important; }
-  @media (max-width: 620px) { .nav a:not(.nav__cta) { display: none; } .hero__mark { display: none; } }
+
+  /* Mobile menu toggle (hidden on desktop) */
+  .nav-toggle { display: none; }
+
+  @media (max-width: 620px) {
+    .hero__mark { display: none; }
+
+    .nav-toggle {
+      display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(11,10,13,.42); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      color: var(--paper); cursor: pointer; z-index: 60;
+    }
+    .nav-toggle span { display: block; width: 18px; height: 1.6px; background: currentColor; border-radius: 2px; transition: transform .3s cubic-bezier(.2,.7,.2,1), opacity .2s ease; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.6px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.6px) rotate(-45deg); }
+
+    .nav {
+      position: absolute; top: 100%; left: var(--gutter); right: var(--gutter);
+      flex-direction: column; align-items: stretch; gap: 2px;
+      margin-top: 10px; padding: 10px;
+      background: rgba(11,10,13,.94); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line); border-radius: 16px;
+      box-shadow: 0 30px 80px -28px rgba(0,0,0,.92);
+      opacity: 0; transform: translateY(-10px); pointer-events: none;
+      transition: opacity .28s ease, transform .28s cubic-bezier(.2,.7,.2,1);
+    }
+    .nav.is-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .nav a { font-size: 15px; padding: 14px 16px; border-radius: 10px; }
+    .nav a:not(.nav__cta):hover, .nav a:not(.nav__cta):active { background: rgba(237,234,227,.06); color: var(--paper); }
+    .nav__cta { text-align: center; margin-top: 6px; border-radius: 10px; }
+  }
 
   /* Hero */
   .hero {
@@ -541,7 +573,10 @@
       <span class="brand__mark" data-icon="mark"></span>
       <span class="brand__name">Arjan Terpstra</span>
     </a>
-    <nav class="nav" aria-label="Main menu">
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="primaryNav" aria-label="Main menu">
       <a href="#work">Work</a>
       <a href="#listen">Listen</a>
       <a href="Discography.html">Catalogue</a>
@@ -843,6 +878,29 @@
   const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* Mobile dropdown menu */
+  (function () {
+    const toggle = document.getElementById('navToggle');
+    const nav = document.getElementById('primaryNav');
+    if (!toggle || !nav) return;
+    const setOpen = (open) => {
+      nav.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    toggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!nav.classList.contains('is-open')); });
+    // Close when a link is tapped
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    // Close when tapping outside the header
+    document.addEventListener('click', (e) => {
+      if (nav.classList.contains('is-open') && !header.contains(e.target)) setOpen(false);
+    });
+    // Close on Escape
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    // Reset when leaving mobile width
+    window.matchMedia('(min-width: 621px)').addEventListener('change', (m) => { if (m.matches) setOpen(false); });
+  })();
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealEls = document.querySelectorAll('.reveal');
