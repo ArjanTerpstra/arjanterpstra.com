@@ -95,6 +95,69 @@
   /* head with a side action */
   .head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px 48px; flex-wrap: wrap; }
 
+  /* ===== Syncs marquee (auto-scrolling reel) ===== */
+  .marquee {
+    position: relative; width: 100%;
+    padding: 6px 0;
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none; -ms-overflow-style: none;
+    cursor: grab; -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+  .marquee::-webkit-scrollbar { display: none; height: 0; }
+  .marquee.is-dragging { cursor: grabbing; }
+  .marquee.is-dragging .sync-card { pointer-events: none; }
+  .marquee__track {
+    display: flex; gap: 22px; width: max-content;
+    will-change: transform;
+  }
+
+  .sync-card {
+    flex: 0 0 auto; width: clamp(280px, 34vw, 400px);
+    display: block; padding: 0; border: 0; background: none;
+    text-align: left; cursor: pointer; color: inherit; font: inherit;
+    transform-origin: center center; transition: opacity .25s ease;
+    will-change: transform, opacity;
+  }
+  .sync-card__art {
+    position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden;
+    border-radius: 12px; border: 1px solid var(--line); background: #14121b;
+    box-shadow: 0 24px 60px -34px rgba(0,0,0,.9);
+    transition: transform .4s cubic-bezier(.2,.7,.2,1), border-color .3s ease, box-shadow .3s ease;
+  }
+  .sync-card__art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1), opacity .3s ease; }
+  .sync-card:hover .sync-card__art { transform: translateY(-4px); border-color: rgba(var(--accent-rgb), .55); box-shadow: 0 34px 70px -30px rgba(0,0,0,.95); }
+  .sync-card:hover .sync-card__art img { transform: scale(1.06); }
+  .sync-card__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 52%, rgba(6,5,11,.78)); }
+  .sync-card__play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2;
+    width: 54px; height: 54px; border-radius: 999px; border: 1.5px solid rgba(237,234,227,.85);
+    background: rgba(11,10,13,.32); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    display: grid; place-items: center; transition: border-color .3s ease, background .3s ease, box-shadow .3s ease;
+  }
+  .sync-card__play::after { content: ""; border-style: solid; border-width: 8px 0 8px 14px; border-color: transparent transparent transparent var(--paper); margin-left: 3px; }
+  .sync-card:hover .sync-card__play { border-color: var(--accent); background: rgba(var(--accent-rgb), .22); box-shadow: 0 0 26px rgba(var(--accent-rgb), .5); }
+  .sync-card__cap { position: absolute; left: 16px; right: 16px; bottom: 13px; z-index: 2; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; pointer-events: none; }
+  .sync-card__cap b { font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--paper); }
+  .sync-card__cap span { color: var(--faint); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+
+  /* Lightbox */
+  .yt-lightbox { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: clamp(16px, 5vw, 64px); background: rgba(4,3,8,.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .3s ease; }
+  .yt-lightbox.is-open { display: flex; opacity: 1; }
+  .yt-lightbox__frame { position: relative; width: min(1100px, 100%); aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; box-shadow: 0 50px 120px -30px rgba(0,0,0,.9); background: #000; }
+  .yt-lightbox__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt-lightbox__close { position: absolute; top: -6px; right: -6px; transform: translate(50%, -50%); width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,10,13,.9); color: var(--paper); cursor: pointer; display: grid; place-items: center; z-index: 3; transition: background .25s ease, border-color .25s ease, transform .25s ease; }
+  .yt-lightbox__close:hover { background: rgba(var(--accent-rgb), .2); border-color: var(--accent); transform: translate(50%, -50%) scale(1.06); }
+  .yt-lightbox__close::before, .yt-lightbox__close::after { content: ""; position: absolute; width: 17px; height: 1.6px; background: currentColor; border-radius: 2px; }
+  .yt-lightbox__close::before { transform: rotate(45deg); }
+  .yt-lightbox__close::after { transform: rotate(-45deg); }
+  @media (max-width: 560px) { .yt-lightbox__close { top: 8px; right: 8px; transform: none; } .yt-lightbox__close:hover { transform: scale(1.06); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sync-card { scroll-snap-align: start; }
+  }
+
   @media (max-width: 620px) {
     .spotify-embed iframe { height: 520px; }
   }
@@ -229,15 +292,78 @@
         </div>
         <a href="https://youtube.com/playlist?list=PLJkgibw0HmOfI9y0zap0LcIbWuMFbRsZc" target="_blank" rel="noopener" class="btn btn--ghost">Open full playlist</a>
       </div>
-      <div class="embed-card reveal">
-        <div class="video-embed">
-          <iframe
-            src="https://www.youtube.com/embed/videoseries?list=PLJkgibw0HmOfI9y0zap0LcIbWuMFbRsZc"
-            title="Arjan Terpstra, syncs playlist"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen></iframe>
+      <div class="marquee reveal" id="syncMarquee" aria-label="Trailer reel, hover to pause">
+        <div class="marquee__track" id="syncTrack">
+          <button class="sync-card" type="button" data-yt="RV4qakZgCHY" data-title="Destiny 2 × Star Wars">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/RV4qakZgCHY/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/RV4qakZgCHY/hqdefault.jpg'" alt="Destiny 2 × Star Wars trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Destiny 2 × Star Wars</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="2BAG-G-qz_Y" data-title="World of Warcraft">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/2BAG-G-qz_Y/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/2BAG-G-qz_Y/hqdefault.jpg'" alt="World of Warcraft trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>World of Warcraft</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="NQa7CAuCL6I" data-title="Call of Duty: Mobile">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/NQa7CAuCL6I/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/NQa7CAuCL6I/hqdefault.jpg'" alt="Call of Duty: Mobile trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Call of Duty: Mobile</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="PfmUdCsr1nw" data-title="Hearthstone">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/PfmUdCsr1nw/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/PfmUdCsr1nw/hqdefault.jpg'" alt="Hearthstone trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Hearthstone</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="HjsUHPBz_64" data-title="The Expanse">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/HjsUHPBz_64/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/HjsUHPBz_64/hqdefault.jpg'" alt="The Expanse trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>The Expanse</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="TMXBjz2FHpc" data-title="BMW">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/TMXBjz2FHpc/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/TMXBjz2FHpc/hqdefault.jpg'" alt="BMW trailer" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>BMW</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="EGopmzPQ2Vw" data-title="Sync">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/EGopmzPQ2Vw/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/EGopmzPQ2Vw/hqdefault.jpg'" alt="Sync video" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Sync</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="dT36HGP5V0Q" data-title="Sync">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/dT36HGP5V0Q/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/dT36HGP5V0Q/hqdefault.jpg'" alt="Sync video" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Sync</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="WsuMB4XQlq4" data-title="Sync">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/WsuMB4XQlq4/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/WsuMB4XQlq4/hqdefault.jpg'" alt="Sync video" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Sync</b><span>Trailer</span></span>
+            </span>
+          </button>
+          <button class="sync-card" type="button" data-yt="uLCFsQsx404" data-title="Sync">
+            <span class="sync-card__art">
+              <img src="https://i.ytimg.com/vi/uLCFsQsx404/maxresdefault.jpg" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/uLCFsQsx404/hqdefault.jpg'" alt="Sync video" loading="lazy" />
+              <span class="sync-card__play"></span>
+              <span class="sync-card__cap"><b>Sync</b><span>Trailer</span></span>
+            </span>
+          </button>
         </div>
       </div>
     </section>
@@ -258,6 +384,159 @@
   </footer>
 
   <audio id="trackPlayer" preload="metadata"></audio>
+
+  <div class="yt-lightbox" id="ytLightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Video player">
+    <div class="yt-lightbox__frame">
+      <button class="yt-lightbox__close" id="ytClose" type="button" aria-label="Close video"></button>
+      <div id="ytMount"></div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var track = document.getElementById('syncTrack');
+    var marquee = document.getElementById('syncMarquee');
+    var movedDuringDrag = false;
+    if (track && marquee) {
+      // Duplicate the cards once so the loop is seamless
+      var originals = Array.prototype.slice.call(track.children);
+      originals.forEach(function (node) {
+        var clone = node.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.tabIndex = -1;
+        track.appendChild(clone);
+      });
+
+      var half = function () { return track.scrollWidth / 2; };
+      // Keep scrollLeft within the first copy so the loop never hits an edge
+      var wrap = function () {
+        var h = half();
+        if (marquee.scrollLeft >= h) marquee.scrollLeft -= h;
+        else if (marquee.scrollLeft <= 0) marquee.scrollLeft += h;
+      };
+      marquee.scrollLeft = 1;
+
+      var cards = Array.prototype.slice.call(track.querySelectorAll('.sync-card'));
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var SPEED = 0.04;            // px per ms — gentle steady drift
+      var paused = false;
+      var inView = true;
+      var last = null;
+
+      // Cinematic focal depth: cards nearest the centre stand taller & brighter,
+      // the edges recede. Uses layout offsets (transform-independent → no jitter).
+      var focal = function () {
+        var mid = marquee.clientWidth / 2;
+        var reach = mid + 80;
+        var sl = marquee.scrollLeft;
+        for (var i = 0; i < cards.length; i++) {
+          var c = cards[i];
+          if (c.matches(':hover')) { c.style.transform = 'scale(1)'; c.style.opacity = '1'; continue; }
+          var center = c.offsetLeft + c.offsetWidth / 2 - sl;
+          var d = Math.min(1, Math.abs(center - mid) / reach);
+          var ease = d * d * (3 - 2 * d); // smoothstep
+          c.style.transform = 'scale(' + (1 - 0.12 * ease).toFixed(4) + ')';
+          c.style.opacity = (1 - 0.52 * ease).toFixed(3);
+        }
+      };
+
+      var step = function (t) {
+        if (last == null) last = t;
+        var dt = Math.min(t - last, 48); last = t; // clamp: a stalled frame can't cause a jump
+        if (!paused && !reduce && inView) { marquee.scrollLeft += SPEED * dt; wrap(); }
+        if (!reduce) focal();
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+
+      // Only drift while the reel is actually on screen (and never play catch-up)
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          inView = es[0].isIntersecting;
+          if (inView) last = null;
+        }, { threshold: 0.04 }).observe(marquee);
+      }
+
+      // Pause on hover / touch / focus
+      marquee.addEventListener('mouseenter', function () { paused = true; });
+      marquee.addEventListener('mouseleave', function () { if (!down) paused = false; });
+      marquee.addEventListener('focusin', function () { paused = true; });
+      marquee.addEventListener('focusout', function () { paused = false; });
+
+      // Native wheel / trackpad horizontal scroll just works (overflow-x:auto);
+      // translate vertical wheel into horizontal so a mouse wheel scrolls the reel too
+      marquee.addEventListener('wheel', function (e) {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          marquee.scrollLeft += e.deltaY; wrap(); e.preventDefault();
+        }
+      }, { passive: false });
+      marquee.addEventListener('scroll', wrap, { passive: true });
+
+      // Drag to scroll (pointer events cover mouse + touch + pen).
+      // Capture is delayed until an actual drag begins, so a plain click on a
+      // card still fires normally and opens the lightbox.
+      var down = false, startX = 0, startScroll = 0, captured = false, pid = null;
+      marquee.addEventListener('pointerdown', function (e) {
+        if (e.button != null && e.button !== 0) return; // primary button / touch only
+        down = true; movedDuringDrag = false; captured = false; pid = e.pointerId;
+        paused = true;
+        startX = e.clientX; startScroll = marquee.scrollLeft;
+      });
+      marquee.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        var dx = e.clientX - startX;
+        if (!movedDuringDrag && Math.abs(dx) > 5) {
+          movedDuringDrag = true;
+          marquee.classList.add('is-dragging');
+          try { marquee.setPointerCapture && marquee.setPointerCapture(pid); captured = true; } catch (err) {}
+        }
+        if (movedDuringDrag) { marquee.scrollLeft = startScroll - dx; wrap(); }
+      });
+      var release = function () {
+        if (!down) return;
+        down = false;
+        marquee.classList.remove('is-dragging');
+        if (captured) { try { marquee.releasePointerCapture(pid); } catch (err) {} captured = false; }
+        paused = marquee.matches(':hover');
+      };
+      marquee.addEventListener('pointerup', release);
+      marquee.addEventListener('pointercancel', release);
+    }
+
+    // Lightbox
+    var lb = document.getElementById('ytLightbox');
+    var mount = document.getElementById('ytMount');
+    var closeBtn = document.getElementById('ytClose');
+    var open = function (id, title) {
+      mount.innerHTML = '';
+      var ifr = document.createElement('iframe');
+      ifr.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+      ifr.setAttribute('allowfullscreen', '');
+      ifr.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      ifr.title = title || 'Trailer';
+      ifr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+      mount.appendChild(ifr);
+      lb.classList.add('is-open'); lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+    var close = function () {
+      lb.classList.remove('is-open'); lb.setAttribute('aria-hidden', 'true');
+      mount.innerHTML = '';
+      document.body.style.overflow = '';
+    };
+    document.addEventListener('click', function (e) {
+      var card = e.target.closest && e.target.closest('.sync-card');
+      if (card) {
+        if (movedDuringDrag) { movedDuringDrag = false; return; } // ignore click that ends a drag
+        open(card.getAttribute('data-yt'), card.getAttribute('data-title')); return;
+      }
+      if (e.target === lb) close();
+    });
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.classList.contains('is-open')) close(); });
+  })();
+  </script>
 
   <script src="assets/player.js"></script>
 
