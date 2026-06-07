@@ -1217,13 +1217,23 @@
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!smallScreen && !saveData && !slowNet && !reduceMotion) {
       begin();
-    } else {
-      // Don't auto-load on mobile, but still allow it to start on first interaction
-      // for users who scroll/tap and have the bandwidth to spare.
-      started = false;
+    } else if (!saveData && !slowNet && !reduceMotion) {
+      // Mobile / smaller screens: still show the hero video, but defer loading until
+      // the page has finished its initial paint so it doesn't compete with FCP/LCP.
+      var deferStart = function () {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(begin, { timeout: 2500 });
+        } else {
+          setTimeout(begin, 1200);
+        }
+      };
+      if (document.readyState === 'complete') deferStart();
+      else window.addEventListener('load', deferStart, { once: true });
     }
+    // (On explicit data-saver or 2G we keep the lightweight poster only.)
     // Fallback: if autoplay was blocked (Low Power Mode etc.), start on first interaction
     var kick = function () {
+      if (!started && !saveData && !slowNet) begin();
       if (v.paused) tryPlay();
       if (!v.paused) {
         ['touchstart', 'pointerdown', 'click', 'scroll'].forEach(function (ev) {
